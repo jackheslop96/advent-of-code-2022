@@ -9,15 +9,18 @@ class CalorieCounter {
     }
 
     fun calculateTotals(calories: List<String>): List<Int> {
-        val totals = mutableListOf(0)
-        for (calorie in calories) {
-            if (calorie == "") {
-                totals.add(0)
-            } else {
-                totals[totals.lastIndex] = totals.last() + calorie.toInt()
+        val nonEmpty: (String) -> Boolean = { it != "" }
+        val empty: (String) -> Boolean = { !nonEmpty(it) }
+        fun rec(cs: List<String>, acc: List<Int>): List<Int> {
+            return when (cs) {
+                emptyList<String>() -> acc
+                else -> {
+                    val total = cs.takeWhile { nonEmpty(it) }.sumOf { it.toInt() }
+                    rec(cs.dropWhile { nonEmpty(it) }.dropWhile { empty(it) }, acc.plus(total))
+                }
             }
         }
-        return totals
+        return rec(calories, emptyList())
     }
 
     fun findHighestN(totals: List<Int>, n: Int): Int {
