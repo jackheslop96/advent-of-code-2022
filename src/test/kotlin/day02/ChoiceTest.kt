@@ -8,38 +8,32 @@ internal class ChoiceTest {
 
     @Test
     fun whenLetterIsA_thenReturnRock() {
-        val expected = Rock
-        assertEquals(expected, Choice.apply("A"))
+        assertEquals(Rock, Choice.apply("A"))
     }
 
     @Test
     fun whenLetterIsB_thenReturnPaper() {
-        val expected = Paper
-        assertEquals(expected, Choice.apply("B"))
+        assertEquals(Paper, Choice.apply("B"))
     }
 
     @Test
     fun whenLetterIsC_thenReturnScissors() {
-        val expected = Scissors
-        assertEquals(expected, Choice.apply("C"))
+        assertEquals(Scissors, Choice.apply("C"))
     }
 
     @Test
     fun whenLetterIsX_thenReturnRock() {
-        val expected = Rock
-        assertEquals(expected, Choice.apply("X"))
+        assertEquals(Rock, Choice.apply("X"))
     }
 
     @Test
     fun whenLetterIsY_thenReturnPaper() {
-        val expected = Paper
-        assertEquals(expected, Choice.apply("Y"))
+        assertEquals(Paper, Choice.apply("Y"))
     }
 
     @Test
     fun whenLetterIsZ_thenReturnScissors() {
-        val expected = Scissors
-        assertEquals(expected, Choice.apply("Z"))
+        assertEquals(Scissors, Choice.apply("Z"))
     }
 
     @Test

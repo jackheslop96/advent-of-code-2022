@@ -8,20 +8,17 @@ internal class ResultTest {
 
     @Test
     fun whenLetterIsX_thenReturnLoss() {
-        val expected = Loss
-        assertEquals(expected, Result.apply("X"))
+        assertEquals(Loss, Result.apply("X"))
     }
 
     @Test
     fun whenLetterIsY_thenReturnDraw() {
-        val expected = Draw
-        assertEquals(expected, Result.apply("Y"))
+        assertEquals(Draw, Result.apply("Y"))
     }
 
     @Test
     fun whenLetterIsZ_thenReturnWin() {
-        val expected = Win
-        assertEquals(expected, Result.apply("Z"))
+        assertEquals(Win, Result.apply("Z"))
     }
 
     @Test
