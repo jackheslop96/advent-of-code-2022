@@ -9,8 +9,8 @@ class RockPaperScissors {
 
     fun run(fileName: String, part: Part): Int {
         val lines = FileReader.readFile(fileName)
+        val regex = """([A-C]) ([X-Z])""".toRegex()
         return lines.fold(0) { acc, line ->
-            val regex = """([A-C]) ([X-Z])""".toRegex()
             val (abc, xyz) = regex.find(line)!!.destructured
             val opponentChoice = Choice.apply(abc)
             when (part) {
