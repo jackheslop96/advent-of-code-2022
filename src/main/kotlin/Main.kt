@@ -2,6 +2,7 @@ import day01.CalorieCounter
 import day02.RockPaperScissors
 import day03.RucksackReorganisation
 import day04.CampCleanup
+import day05.SupplyStacks
 import utils.Part1
 import utils.Part2
 
@@ -26,4 +27,9 @@ fun main(args : Array<String>) {
     val f4 = "/day-04-input.txt"
     println("Day 4 Part 1: ${CampCleanup().run(f4, Part1)}")
     println("Day 4 Part 2: ${CampCleanup().run(f4, Part2)}")
+
+    // day 5
+    val f5 = "/day-05-input.txt"
+    println("Day 5 Part 1: ${SupplyStacks().run(f5, Part1)}")
+    println("Day 5 Part 2: ${SupplyStacks().run(f5, Part2)}")
 }
