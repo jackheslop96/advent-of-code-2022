@@ -3,6 +3,7 @@ import day02.RockPaperScissors
 import day03.RucksackReorganisation
 import day04.CampCleanup
 import day05.SupplyStacks
+import day06.TuningTrouble
 import utils.Part1
 import utils.Part2
 
@@ -32,4 +33,9 @@ fun main(args : Array<String>) {
     val f5 = "/day-05-input.txt"
     println("Day 5 Part 1: ${SupplyStacks().run(f5, Part1)}")
     println("Day 5 Part 2: ${SupplyStacks().run(f5, Part2)}")
+
+    // day 6
+    val f6 = "/day-06-input.txt"
+    println("Day 6 Part 1: ${TuningTrouble().run(f6, Part1)}")
+    println("Day 6 Part 2: ${TuningTrouble().run(f6, Part2)}")
 }
