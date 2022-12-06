@@ -22,17 +22,10 @@ class TuningTrouble {
             chars.take(n).map { it.value }.distinct().size == n
 
         fun rec(chars: List<IndexedValue<Char>>): Int {
-            return when (chars) {
-                emptyList<IndexedValue<Char>>() -> {
-                    throw IllegalArgumentException("$dataStream does not have a marker")
-                }
-                else -> {
-                    if (firstNCharactersAreDistinct(chars)) {
-                        chars[n].index
-                    } else {
-                        rec(chars.drop(1))
-                    }
-                }
+            return when {
+                chars.isEmpty() -> throw IllegalArgumentException("$dataStream does not have a marker")
+                firstNCharactersAreDistinct(chars) -> chars[n].index
+                else -> rec(chars.drop(1))
             }
         }
 
