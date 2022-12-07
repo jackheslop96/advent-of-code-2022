@@ -25,21 +25,18 @@ class NoSpaceLeftOnDevice {
     private val cdRegex = """^\$ cd ([A-Za-z0-9]*)$""".toRegex()
     private val moveOutOneLevel = "$ cd .."
 
-    class Acc(val commands: List<String>, val directoryMap: Map<*, *>)
-
     fun directorySizes(fileName: String): List<Int> {
-        fun rec(map: Map<*, *>, acc: List<Map<*, *>>): List<Map<*, *>> {
-            return map.values.flatMap { x ->
+        fun rec(map: Map<*, *>): List<Map<*, *>> {
+            val innerMaps = map.values.flatMap { x ->
                 when (x) {
-                    is Map<*, *> -> acc.plus(rec(x, acc.plusElement(x)))
-                    else -> acc
+                    is Map<*, *> -> rec(x)
+                    else -> emptyList()
                 }
             }
+            return listOf(map) + innerMaps
         }
 
-        val map = buildMap(fileName)
-        val maps = listOf(map) + rec(map, emptyList()).distinct()
-        return maps.map { directorySize(it) }.sorted()
+        return rec(buildMap(fileName)).map { directorySize(it) }.sorted()
     }
 
     fun directorySize(mapEntry: Any?): Int {
@@ -50,9 +47,9 @@ class NoSpaceLeftOnDevice {
         }
     }
 
-    fun buildMap(fileName: String): Map<*, *> {
-        val commands = FileReader.readFile(fileName)
+    class Acc(val commands: List<String>, val directoryMap: Map<*, *>)
 
+    fun buildMap(fileName: String): Map<*, *> {
         fun rec(acc: Acc): Acc {
             return when (acc.commands) {
                 emptyList<String>() -> acc
@@ -63,14 +60,11 @@ class NoSpaceLeftOnDevice {
                         acc
                     } else if (command.matches(cdRegex)) {
                         val (dir) = cdRegex.find(command)!!.destructured
-                        when (val map = acc.directoryMap[dir]) {
+                        when (val directory = acc.directoryMap[dir]) {
                             is Map<*, *> -> {
-                                val innerMap = rec(Acc(updatedCommands, map))
-                                val updatedAcc = Acc(
-                                    innerMap.commands.drop(1),
-                                    acc.directoryMap.plus(mapOf(dir to innerMap.directoryMap))
-                                )
-                                rec(updatedAcc)
+                                val innerAcc = rec(Acc(updatedCommands, directory))
+                                val innerMap = mapOf(dir to innerAcc.directoryMap)
+                                rec(Acc(innerAcc.commands.drop(1), acc.directoryMap.plus(innerMap)))
                             }
                             else -> throw Exception("Directory $dir is not a map")
                         }
@@ -81,6 +75,7 @@ class NoSpaceLeftOnDevice {
             }
         }
 
+        val commands = FileReader.readFile(fileName)
         return rec(Acc(commands, emptyMap<String, Any>())).directoryMap
     }
 
