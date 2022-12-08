@@ -10,9 +10,9 @@ class TreetopTreeHouse {
     fun run(fileName: String, part: Part): Int {
         val trees = FileReader
             .readFile(fileName)
-            .map { it.toList().map { x -> x.toString().toInt() } }
+            .map { it.map { char -> char.toString().toInt() } }
 
-        val coordinates = trees.map { x -> x.withIndex() }.withIndex()
+        val coordinates = trees.map { it.withIndex() }.withIndex()
             .flatMap { row ->
                 row.value.map { column ->
                     Pair(column.index, row.index)
