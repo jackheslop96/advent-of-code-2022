@@ -1,4 +1,4 @@
-package day09
+package day08
 
 import utils.FileReader
 import utils.Part
