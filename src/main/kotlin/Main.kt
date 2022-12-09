@@ -55,4 +55,5 @@ fun main(args : Array<String>) {
     // day 9
     val f9 = "/day-09-input.txt"
     println("Day 9 Part 1: ${RopeBridge().run(f9, Part1)}")
+    println("Day 9 Part 2: ${RopeBridge().run(f9, Part2)}")
 }

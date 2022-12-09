@@ -2,20 +2,19 @@ package day09
 
 import utils.FileReader
 import utils.Part
+import utils.Part1
+import utils.Part2
 import kotlin.math.abs
 import kotlin.math.pow
 
 typealias Coordinate = Pair<Int, Int>
 
-// need a list of knots
-// each knot follows the knot at the previous index
-
 class RopeBridge {
 
     fun run(fileName: String, part: Part): Int {
-        fun rec(instructions: List<String>, rope: Rope): Tail {
+        fun rec(instructions: List<String>, rope: Rope): Rope {
             return when (instructions) {
-                emptyList<Coordinate>() -> rope.tail
+                emptyList<Coordinate>() -> rope
                 else -> {
                     val instruction = instructions.first()
                     val regex = """([A-Z]) ([\d]*)""".toRegex()
@@ -23,89 +22,79 @@ class RopeBridge {
                     val move = parseDirection(a)
                     val amount = b.toInt()
                     val updatedRope = (1..amount).fold(rope) { acc, _ ->
-                        acc.updateHeadAndTail(move)
+                        acc.updateKnots(move)
                     }
                     rec(instructions.drop(1), updatedRope)
                 }
             }
         }
 
+        val numberOfKnots = when (part) { Part1 -> 2; Part2 -> 10 }
         val instructions = FileReader.readFile(fileName)
-        val tail = rec(instructions, Rope.apply())
-        return tail.visitedPositions.size
+        val rope = rec(instructions, Rope.apply(numberOfKnots))
+        return rope.knots.last().visitedPositions.size
     }
 
-    class Rope(val head: Head, val tail: Tail) {
+    class Rope(val knots: List<Knot>) {
 
-        fun updateHeadAndTail(move: Coordinate): Rope {
-            val updatedHead = head.update(move)
-            return Rope(updatedHead, tail.next(updatedHead))
+        fun updateKnots(move: Coordinate): Rope {
+            fun rec(knots: List<Knot>, acc: List<Knot>): List<Knot> {
+                return when (knots) {
+                    emptyList<Knot>() -> acc
+                    else -> {
+                        val knot = knots.first()
+                        val previousKnot = acc.lastOrNull()
+                        val updatedKnot = if (previousKnot == null) knot.update(move) else knot.next(previousKnot)
+                        rec(knots.drop(1), acc.plusElement(updatedKnot))
+                    }
+                }
+            }
+            return Rope(rec(knots, emptyList()))
         }
 
         companion object {
-            fun apply(): Rope = Rope(Head.apply(), Tail.apply())
+            fun apply(numberOfKnots: Int): Rope = Rope(List(numberOfKnots) { Knot.apply() })
         }
     }
 
-    sealed interface RopeEnd {
-        val position: Coordinate
-
-        fun updatePosition(move: Coordinate): Coordinate {
-            return Pair(position.first + move.first, position.second + move.second)
-        }
-    }
-
-    class Head(override val position: Coordinate) : RopeEnd {
-
-        fun update(move: Coordinate): Head {
-            return Head(updatePosition(move))
-        }
-
-        companion object {
-            fun apply(): Head {
-                return apply(Pair(0, 0))
-            }
-
-            fun apply(position: Coordinate): Head {
-                return Head(position)
-            }
-        }
-    }
-
-    class Tail(override val position: Coordinate, val visitedPositions: Set<Coordinate>) : RopeEnd {
+    class Knot(val position: Coordinate, val visitedPositions: Set<Coordinate>) {
 
         private fun updateVisitedPositions(position: Coordinate): Set<Coordinate> {
             return visitedPositions.plusElement(position)
         }
 
-        private fun update(move: Coordinate): Tail {
-            val updatedPosition = updatePosition(move)
-            return Tail(updatedPosition, updateVisitedPositions(updatedPosition))
+        private fun updatePosition(move: Coordinate): Coordinate {
+            return Pair(position.first + move.first, position.second + move.second)
         }
 
-        fun next(head: Head): Tail {
+        fun update(move: Coordinate): Knot {
+            val updatedPosition = updatePosition(move)
+            return Knot(updatedPosition, updateVisitedPositions(updatedPosition))
+        }
 
-            fun distanceToHeadSquared(position: Coordinate): Double {
-                val a = abs(head.position.first - position.first).toDouble()
-                val b = abs(head.position.second - position.second).toDouble()
+        fun next(previousKnot: Knot): Knot {
+
+            fun distanceToPreviousKnotSquared(position: Coordinate): Double {
+                val a = abs(previousKnot.position.first - position.first).toDouble()
+                val b = abs(previousKnot.position.second - position.second).toDouble()
                 return a.pow(2) + b.pow(2)
             }
 
-            return if (distanceToHeadSquared(position) <= 2.0) {
+            return if (distanceToPreviousKnotSquared(position) <= 2.0) {
                 this
             } else {
-                val move = possibleMoves.minByOrNull { distanceToHeadSquared(updatePosition(it)) } ?: throw Exception("No moves to choose from")
+                val move = possibleMoves.minByOrNull { distanceToPreviousKnotSquared(updatePosition(it)) } ?: throw Exception("No moves to choose from")
                 return update(move)
             }
         }
 
         companion object {
-            fun apply(): Tail {
+            fun apply(): Knot {
                 return apply(Pair(0, 0))
             }
 
-            fun apply(position: Coordinate): Tail {
-                return Tail(position, setOf(position))
+            fun apply(position: Coordinate): Knot {
+                return Knot(position, setOf(position))
             }
         }
     }
