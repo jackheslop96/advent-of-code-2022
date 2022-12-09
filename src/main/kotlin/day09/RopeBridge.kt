@@ -24,18 +24,21 @@ class RopeBridge {
 
         val instructions = FileReader.readFile(fileName).flatMap { expandInstruction(it) }
         val tail = rec(instructions, Head.apply(), Tail.apply())
-        return tail.visitedPositions.toList().size
+        return tail.visitedPositions.size
     }
 
     sealed interface RopeEnd {
         val position: Coordinate
+
+        fun updatePosition(move: Coordinate): Coordinate {
+            return Pair(position.first + move.first, position.second + move.second)
+        }
     }
 
     class Head(override val position: Coordinate) : RopeEnd {
 
-        fun update(coordinate: Coordinate): Head {
-            val updatedPosition = Pair(position.first + coordinate.first, position.second + coordinate.second)
-            return Head(updatedPosition)
+        fun update(move: Coordinate): Head {
+            return Head(updatePosition(move))
         }
 
         companion object {
@@ -55,18 +58,12 @@ class RopeBridge {
             return if (visitedPositions.contains(position)) visitedPositions else visitedPositions.plusElement(position)
         }
 
-        private fun updatePosition(coordinate: Coordinate): Coordinate {
-            return Pair(this.position.first + coordinate.first, this.position.second + coordinate.second)
-        }
-
-        private fun update(coordinate: Coordinate): Tail {
-            val updatedPosition = updatePosition(coordinate)
+        private fun update(move: Coordinate): Tail {
+            val updatedPosition = updatePosition(move)
             return Tail(updatedPosition, updateVisitedPositions(updatedPosition))
         }
 
         fun next(head: Head): Tail {
-
-            val threshold: Double = sqrt(2.0)
 
             fun distanceToHead(position: Coordinate): Double {
                 val a = abs(head.position.first.toDouble() - position.first.toDouble())
@@ -74,16 +71,11 @@ class RopeBridge {
                 return sqrt(a.pow(2) + b.pow(2))
             }
 
-            return if (distanceToHead(this.position) <= threshold) {
+            return if (distanceToHead(position) <= sqrt(2.0)) {
                 this
             } else {
-                val moves = possibleMoves.map { move ->
-                    Pair(move, distanceToHead(updatePosition(move)))
-                }
-
-                val move = moves.minByOrNull { it.second }?.first ?: throw Exception("No tails to choose from")
-
-                return this.update(move)
+                val move = possibleMoves.minByOrNull { distanceToHead(updatePosition(it)) } ?: throw Exception("No moves to choose from")
+                return update(move)
             }
         }
 
