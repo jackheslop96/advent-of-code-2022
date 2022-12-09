@@ -3,6 +3,7 @@ package day09
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import utils.Part1
+import kotlin.test.assertFailsWith
 
 internal class RopeBridgeTest {
 
@@ -93,5 +94,12 @@ internal class RopeBridgeTest {
             Pair(0, -1)
         )
         assertEquals(expected, RopeBridge.expandInstruction("D 1"))
+    }
+
+    @Test
+    fun whenGivenF5_thenThrowAnException() {
+        assertFailsWith<Exception> {
+            RopeBridge.expandInstruction("F 5")
+        }
     }
 }
