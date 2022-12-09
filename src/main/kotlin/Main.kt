@@ -6,6 +6,7 @@ import day05.SupplyStacks
 import day06.TuningTrouble
 import day07.NoSpaceLeftOnDevice
 import day08.TreetopTreeHouse
+import day09.RopeBridge
 import utils.Part1
 import utils.Part2
 
@@ -50,4 +51,8 @@ fun main(args : Array<String>) {
     val f8 = "/day-08-input.txt"
     println("Day 8 Part 1: ${TreetopTreeHouse().run(f8, Part1)}")
     println("Day 8 Part 2: ${TreetopTreeHouse().run(f8, Part2)}")
+
+    // day 9
+    val f9 = "/day-09-input.txt"
+    println("Day 9 Part 1: ${RopeBridge().run(f9, Part1)}")
 }
