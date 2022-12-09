@@ -50,14 +50,18 @@ class RopeBridge {
         }
     }
 
-    class Tail(override val position: Coordinate, val visitedPositions: Sequence<Coordinate>) : RopeEnd {
+    class Tail(override val position: Coordinate, val visitedPositions: List<Coordinate>) : RopeEnd {
 
-        private fun updateVisitedPositions(position: Coordinate): Sequence<Coordinate> {
+        private fun updateVisitedPositions(position: Coordinate): List<Coordinate> {
             return if (visitedPositions.contains(position)) visitedPositions else visitedPositions.plusElement(position)
         }
 
+        private fun updatePosition(coordinate: Coordinate): Coordinate {
+            return Pair(this.position.first + coordinate.first, this.position.second + coordinate.second)
+        }
+
         private fun update(coordinate: Coordinate): Tail {
-            val updatedPosition = Pair(position.first + coordinate.first, position.second + coordinate.second)
+            val updatedPosition = updatePosition(coordinate)
             return Tail(updatedPosition, updateVisitedPositions(updatedPosition))
         }
 
@@ -65,21 +69,22 @@ class RopeBridge {
 
             val threshold: Double = sqrt(2.0)
 
-            fun distanceToHead(tail: Tail): Double {
-                val a = abs(head.position.first.toDouble() - tail.position.first.toDouble())
-                val b = abs(head.position.second.toDouble() - tail.position.second.toDouble())
+            fun distanceToHead(position: Coordinate): Double {
+                val a = abs(head.position.first.toDouble() - position.first.toDouble())
+                val b = abs(head.position.second.toDouble() - position.second.toDouble())
                 return sqrt(a.pow(2) + b.pow(2))
             }
 
-            return if (distanceToHead(this) <= threshold) {
+            return if (distanceToHead(this.position) <= threshold) {
                 this
             } else {
-                val tails = possibleMoves.fold(emptyList<Pair<Tail, Double>>()) { acc, move ->
-                    val updatedTail = this.update(move)
-                    acc.plusElement(Pair(updatedTail, distanceToHead(updatedTail)))
+                val moves = possibleMoves.map { move ->
+                    Pair(move, distanceToHead(updatePosition(move)))
                 }
 
-                return tails.minByOrNull { it.second }?.first ?: throw Exception("No tails to choose from")
+                val move = moves.minByOrNull { it.second }?.first ?: throw Exception("No tails to choose from")
+
+                return this.update(move)
             }
         }
 
@@ -89,7 +94,7 @@ class RopeBridge {
             }
 
             fun apply(position: Coordinate): Tail {
-                return Tail(position, sequenceOf(position))
+                return Tail(position, listOf(position))
             }
         }
     }
