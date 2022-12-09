@@ -4,27 +4,47 @@ import utils.FileReader
 import utils.Part
 import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.math.sqrt
 
 typealias Coordinate = Pair<Int, Int>
+
+// need a list of knots
+// each knot follows the knot at the previous index
 
 class RopeBridge {
 
     fun run(fileName: String, part: Part): Int {
-        fun rec(instructions: List<Coordinate>, head: Head, tail: Tail): Tail {
+        fun rec(instructions: List<String>, rope: Rope): Tail {
             return when (instructions) {
-                emptyList<Coordinate>() -> tail
+                emptyList<Coordinate>() -> rope.tail
                 else -> {
-                    val updatedHead = head.update(instructions.first())
-                    val updatedTail = tail.next(updatedHead)
-                    rec(instructions.drop(1), updatedHead, updatedTail)
+                    val instruction = instructions.first()
+                    val regex = """([A-Z]) ([\d]*)""".toRegex()
+                    val (a, b) = regex.find(instruction)!!.destructured
+                    val move = parseDirection(a)
+                    val amount = b.toInt()
+                    val updatedRope = (1..amount).fold(rope) { acc, _ ->
+                        acc.updateHeadAndTail(move)
+                    }
+                    rec(instructions.drop(1), updatedRope)
                 }
             }
         }
 
-        val instructions = FileReader.readFile(fileName).flatMap { expandInstruction(it) }
-        val tail = rec(instructions, Head.apply(), Tail.apply())
+        val instructions = FileReader.readFile(fileName)
+        val tail = rec(instructions, Rope.apply())
         return tail.visitedPositions.size
+    }
+
+    class Rope(val head: Head, val tail: Tail) {
+
+        fun updateHeadAndTail(move: Coordinate): Rope {
+            val updatedHead = head.update(move)
+            return Rope(updatedHead, tail.next(updatedHead))
+        }
+
+        companion object {
+            fun apply(): Rope = Rope(Head.apply(), Tail.apply())
+        }
     }
 
     sealed interface RopeEnd {
@@ -52,10 +72,10 @@ class RopeBridge {
         }
     }
 
-    class Tail(override val position: Coordinate, val visitedPositions: List<Coordinate>) : RopeEnd {
+    class Tail(override val position: Coordinate, val visitedPositions: Set<Coordinate>) : RopeEnd {
 
-        private fun updateVisitedPositions(position: Coordinate): List<Coordinate> {
-            return if (visitedPositions.contains(position)) visitedPositions else visitedPositions.plusElement(position)
+        private fun updateVisitedPositions(position: Coordinate): Set<Coordinate> {
+            return visitedPositions.plusElement(position)
         }
 
         private fun update(move: Coordinate): Tail {
@@ -65,16 +85,16 @@ class RopeBridge {
 
         fun next(head: Head): Tail {
 
-            fun distanceToHead(position: Coordinate): Double {
-                val a = abs(head.position.first.toDouble() - position.first.toDouble())
-                val b = abs(head.position.second.toDouble() - position.second.toDouble())
-                return sqrt(a.pow(2) + b.pow(2))
+            fun distanceToHeadSquared(position: Coordinate): Double {
+                val a = abs(head.position.first - position.first).toDouble()
+                val b = abs(head.position.second - position.second).toDouble()
+                return a.pow(2) + b.pow(2)
             }
 
-            return if (distanceToHead(position) <= sqrt(2.0)) {
+            return if (distanceToHeadSquared(position) <= 2.0) {
                 this
             } else {
-                val move = possibleMoves.minByOrNull { distanceToHead(updatePosition(it)) } ?: throw Exception("No moves to choose from")
+                val move = possibleMoves.minByOrNull { distanceToHeadSquared(updatePosition(it)) } ?: throw Exception("No moves to choose from")
                 return update(move)
             }
         }
@@ -85,7 +105,7 @@ class RopeBridge {
             }
 
             fun apply(position: Coordinate): Tail {
-                return Tail(position, listOf(position))
+                return Tail(position, setOf(position))
             }
         }
     }
@@ -99,14 +119,12 @@ class RopeBridge {
                 }
             }
 
-        fun expandInstruction(instruction: String): List<Coordinate> {
-            val regex = """([A-Z]) ([\d]*)""".toRegex()
-            val (direction, amount) = regex.find(instruction)!!.destructured
+        fun parseDirection(direction: String): Coordinate {
             return when (direction) {
-                "R" -> List(amount.toInt()) { Pair(1, 0) }
-                "U" -> List(amount.toInt()) { Pair(0, 1) }
-                "L" -> List(amount.toInt()) { Pair(-1, 0) }
-                "D" -> List(amount.toInt()) { Pair(0, -1) }
+                "R" -> Pair(1, 0)
+                "U" -> Pair(0, 1)
+                "L" -> Pair(-1, 0)
+                "D" -> Pair(0, -1)
                 else -> throw Exception("$direction was not recognised as a valid direction")
             }
         }

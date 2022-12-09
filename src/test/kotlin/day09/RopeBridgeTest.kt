@@ -19,7 +19,7 @@ internal class RopeBridgeTest {
         val tail = RopeBridge.Tail.apply()
         val result = tail.next(head)
         assertEquals(Pair(0, 0), result.position)
-        assertEquals(listOf(Pair(0, 0)), result.visitedPositions)
+        assertEquals(setOf(Pair(0, 0)), result.visitedPositions)
     }
 
     @Test
@@ -28,7 +28,7 @@ internal class RopeBridgeTest {
         val tail = RopeBridge.Tail.apply()
         val result = tail.next(head)
         assertEquals(Pair(1, 0), result.position)
-        assertEquals(listOf(Pair(0, 0), Pair(1, 0)), result.visitedPositions)
+        assertEquals(setOf(Pair(0, 0), Pair(1, 0)), result.visitedPositions)
     }
 
     @Test
@@ -37,7 +37,7 @@ internal class RopeBridgeTest {
         val tail = RopeBridge.Tail.apply()
         val result = tail.next(head)
         assertEquals(Pair(0, 0), result.position)
-        assertEquals(listOf(Pair(0, 0)), result.visitedPositions)
+        assertEquals(setOf(Pair(0, 0)), result.visitedPositions)
     }
 
     @Test
@@ -57,49 +57,29 @@ internal class RopeBridgeTest {
     }
 
     @Test
-    fun whenGivenR4_thenReturnARightMove4Times() {
-        val expected = listOf(
-            Pair(1, 0),
-            Pair(1, 0),
-            Pair(1, 0),
-            Pair(1, 0)
-        )
-        assertEquals(expected, RopeBridge.expandInstruction("R 4"))
+    fun whenGivenR_thenReturnARightMove() {
+        assertEquals(Pair(1, 0), RopeBridge.parseDirection("R"))
     }
 
     @Test
-    fun whenGivenU4_thenReturnAnUpMove4Times() {
-        val expected = listOf(
-            Pair(0, 1),
-            Pair(0, 1),
-            Pair(0, 1),
-            Pair(0, 1)
-        )
-        assertEquals(expected, RopeBridge.expandInstruction("U 4"))
+    fun whenGivenU_thenReturnAnUpMove() {
+        assertEquals(Pair(0, 1), RopeBridge.parseDirection("U"))
     }
 
     @Test
-    fun whenGivenL3_thenReturnALeftMove3Times() {
-        val expected = listOf(
-            Pair(-1, 0),
-            Pair(-1, 0),
-            Pair(-1, 0)
-        )
-        assertEquals(expected, RopeBridge.expandInstruction("L 3"))
+    fun whenGivenL3_thenReturnALeftMove() {
+        assertEquals(Pair(-1, 0), RopeBridge.parseDirection("L"))
     }
 
     @Test
-    fun whenGivenD1_thenReturnADownMove1Time() {
-        val expected = listOf(
-            Pair(0, -1)
-        )
-        assertEquals(expected, RopeBridge.expandInstruction("D 1"))
+    fun whenGivenD1_thenReturnADownMove() {
+        assertEquals(Pair(0, -1), RopeBridge.parseDirection("D"))
     }
 
     @Test
-    fun whenGivenF5_thenThrowAnException() {
+    fun whenGivenF_thenThrowAnException() {
         assertFailsWith<Exception> {
-            RopeBridge.expandInstruction("F 5")
+            RopeBridge.parseDirection("F")
         }
     }
 }
