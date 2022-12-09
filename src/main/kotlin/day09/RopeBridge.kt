@@ -24,7 +24,6 @@ class RopeBridge {
 
         val instructions = FileReader.readFile(fileName).flatMap { expandInstruction(it) }
         val tail = rec(instructions, Head.apply(), Tail.apply())
-        println("***")
         return tail.visitedPositions.toList().size
     }
 
