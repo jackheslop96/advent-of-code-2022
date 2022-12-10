@@ -7,6 +7,7 @@ import day06.TuningTrouble
 import day07.NoSpaceLeftOnDevice
 import day08.TreetopTreeHouse
 import day09.RopeBridge
+import day10.CathodeRayTube
 import utils.Part1
 import utils.Part2
 
@@ -56,4 +57,10 @@ fun main(args : Array<String>) {
     val f9 = "/day-09-input.txt"
     println("Day 9 Part 1: ${RopeBridge().run(f9, Part1)}")
     println("Day 9 Part 2: ${RopeBridge().run(f9, Part2)}")
+
+    // day 10
+    val f10 = "/day-10-input.txt"
+    println("Day 10 Part 1: ${CathodeRayTube().part1(f10)}")
+    println("Day 10 Part 2")
+    CathodeRayTube().part2(f10).forEach { println(it) }
 }
