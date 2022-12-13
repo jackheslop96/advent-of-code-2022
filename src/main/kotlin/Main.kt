@@ -9,6 +9,7 @@ import day08.TreetopTreeHouse
 import day09.RopeBridge
 import day10.CathodeRayTube
 import day11.MonkeyInTheMiddle
+import day12.HillClimbingAlgorithm
 import utils.Part1
 import utils.Part2
 
@@ -69,4 +70,9 @@ fun main(args : Array<String>) {
     val f11 = "/day-11-input.txt"
     println("Day 11 Part 1: ${MonkeyInTheMiddle().run(f11, Part1)}")
     println("Day 11 Part 2: ${MonkeyInTheMiddle().run(f11, Part2)}")
+
+    // day 12
+    val f12 = "/day-12-input.txt"
+    println("Day 12 Part 1: ${HillClimbingAlgorithm().run(f12, Part1)}")
+    println("Day 12 Part 2: ${HillClimbingAlgorithm().run(f12, Part2)}")
 }
