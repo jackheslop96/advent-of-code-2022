@@ -1,6 +1,6 @@
 package day12
 
-import day12.HillClimbingAlgorithm.Companion.canMoveTo
+import day12.HillClimbingAlgorithm.Companion.isAllowedToMoveTo
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import utils.Part1
@@ -37,41 +37,41 @@ internal class HillClimbingAlgorithmTest {
 
     @Test
     fun `when I am at a then I can move to S`() {
-        assertTrue('a'.canMoveTo('S'))
+        assertTrue('a'.isAllowedToMoveTo('S'))
     }
 
     @Test
     fun `when I am at b then I can move to S`() {
-        assertTrue('b'.canMoveTo('S'))
+        assertTrue('b'.isAllowedToMoveTo('S'))
     }
 
     @Test
     fun `when I am at b then I can move to a`() {
-        assertTrue('b'.canMoveTo('a'))
+        assertTrue('b'.isAllowedToMoveTo('a'))
     }
 
     @Test
     fun `when I am at c then I can't move to c`() {
-        assertFalse('c'.canMoveTo('a'))
+        assertFalse('c'.isAllowedToMoveTo('a'))
     }
 
     @Test
     fun `when I am at c then I can't move to S`() {
-        assertFalse('c'.canMoveTo('S'))
+        assertFalse('c'.isAllowedToMoveTo('S'))
     }
 
     @Test
     fun `when I am at E then I can't move to x`() {
-        assertFalse('E'.canMoveTo('x'))
+        assertFalse('E'.isAllowedToMoveTo('x'))
     }
 
     @Test
     fun `when I am at E then I can move to y`() {
-        assertTrue('E'.canMoveTo('y'))
+        assertTrue('E'.isAllowedToMoveTo('y'))
     }
 
     @Test
     fun `when I am at E then I can move to z`() {
-        assertTrue('E'.canMoveTo('z'))
+        assertTrue('E'.isAllowedToMoveTo('z'))
     }
 }

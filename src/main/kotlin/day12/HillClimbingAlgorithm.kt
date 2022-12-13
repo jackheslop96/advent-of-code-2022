@@ -22,12 +22,16 @@ class HillClimbingAlgorithm {
         val paths: MutableMap<GridValue, Int> = mutableMapOf()
         paths[start] = 0
 
+        fun GridValue.isTheShortestWayTo(other: GridValue): Boolean =
+            paths[this]!! + 1 < (paths[other] ?: Int.MAX_VALUE)
+
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
+
             possibleMoves
                 .mapNotNull { (current.first + it).toGridValue(grid) }
-                .filter { !paths.containsKey(it) }
-                .filter { current.second.canMoveTo(it.second) }
+                .filter { current.isAllowedToMoveTo(it) }
+                .filter { current.isTheShortestWayTo(it) }
                 .forEach { paths[it] = paths[current]!! + 1; queue.add(it) }
         }
 
@@ -38,11 +42,6 @@ class HillClimbingAlgorithm {
     }
 
     companion object {
-        fun Char.canMoveTo(next: Char): Boolean {
-            val thisUpdated = when (this) { 'E' -> 'z'; else -> this }
-            val nextUpdated = when (next) { 'S' -> 'a'; else -> next }
-            return thisUpdated.code <= nextUpdated.code + 1
-        }
 
         val possibleMoves = listOf(
             Vector(0, -1), // up
@@ -64,6 +63,15 @@ class HillClimbingAlgorithm {
                 }
             }
             return rec()
+        }
+
+        fun GridValue.isAllowedToMoveTo(next: GridValue): Boolean =
+            this.second.isAllowedToMoveTo(next.second)
+
+        fun Char.isAllowedToMoveTo(next: Char): Boolean {
+            val thisUpdated = when (this) { 'E' -> 'z'; else -> this }
+            val nextUpdated = when (next) { 'S' -> 'a'; else -> next }
+            return thisUpdated.code <= nextUpdated.code + 1
         }
 
         fun Vector.toGridValue(grid: Grid): GridValue? {
