@@ -35,20 +35,16 @@ class RegolithReservoir {
 
             return if (isOnFloor()) {
                 rec(pourPoint, acc.plusElement(current))
+            } else if (isFinished()) {
+                acc
+            } else if (!acc.contains(downOne)) {
+                rec(downOne, acc)
+            } else if (!acc.contains(downOneLeftOne)) {
+                rec(downOneLeftOne, acc)
+            } else if (!acc.contains(downOneRightOne)) {
+                rec(downOneRightOne, acc)
             } else {
-                if (isFinished()) {
-                    acc
-                } else {
-                    if (!acc.contains(downOne)) {
-                        rec(downOne, acc)
-                    } else if (!acc.contains(downOneLeftOne)) {
-                        rec(downOneLeftOne, acc)
-                    } else if (!acc.contains(downOneRightOne)) {
-                        rec(downOneRightOne, acc)
-                    } else {
-                        rec(pourPoint, acc.plusElement(current))
-                    }
-                }
+                rec(pourPoint, acc.plusElement(current))
             }
         }
         return rec(pourPoint, rockCoordinates).size - rockCoordinates.size
