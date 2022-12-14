@@ -11,6 +11,7 @@ import day10.CathodeRayTube
 import day11.MonkeyInTheMiddle
 import day12.HillClimbingAlgorithm
 import day13.DistressSignal
+import day14.RegolithReservoir
 import utils.Part1
 import utils.Part2
 
@@ -81,4 +82,9 @@ fun main(args : Array<String>) {
     val f13 = "/day-13-input.txt"
     println("Day 13 Part 1: ${DistressSignal().run(f13, Part1)}")
     println("Day 13 Part 2: ${DistressSignal().run(f13, Part2)}")
+
+    // day 14
+    val f14 = "/day-14-input.txt"
+    println("Day 14 Part 1: ${RegolithReservoir().run(f14, Part1)}")
+    println("Day 14 Part 2: ${RegolithReservoir().run(f14, Part2)}")
 }
